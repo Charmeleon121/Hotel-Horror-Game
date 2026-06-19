@@ -33,7 +33,7 @@ public class Player : MonoBehaviour {
 		float playerLookRot = transform.localRotation.eulerAngles.y + (lookSpeed * lookVector.x * Time.fixedDeltaTime);
 		float cameraLookRot = Camera.main.transform.localRotation.eulerAngles.x + (lookSpeed * -lookVector.y * Time.fixedDeltaTime);
 
-		transform.localRotation = Quaternion.Euler(0f, playerLookRot, 0f);
+		transform.rotation = Quaternion.Euler(0f, playerLookRot, 0f);
 		Camera.main.transform.localRotation = Quaternion.Euler(cameraLookRot, 0f, 0f);
 	}
 
@@ -42,10 +42,11 @@ public class Player : MonoBehaviour {
 	 */
 	private void Move() {
 		Vector2 moveVector = moveAction.ReadValue<Vector2>();
+		float moveFactor = transform.right.x * moveVector.x + transform.forward.x * moveVector.y;
 
-		float newX = transform.position.x + (walkSpeed * moveVector.x * Time.fixedDeltaTime);
-		float newZ = transform.position.z + (walkSpeed * moveVector.y * Time.fixedDeltaTime);
-
-		transform.position = new Vector3(newX, 1f, newZ);
+		float newX = transform.localPosition.x + (walkSpeed * moveFactor * Time.fixedDeltaTime);
+		float newZ = transform.localPosition.z + (walkSpeed * moveFactor * Time.fixedDeltaTime);
+		
+		transform.localPosition = new Vector3(newX, 1f, newZ);
 	}
 }
