@@ -9,11 +9,16 @@ public class UIHandler : MonoBehaviour {
 	private int timer = 0;
 	
 	/*
-	  * Start method - use this to ensure the UI is not destroyed between scenes
+	  * Start method
 	  */
 	private void Start() {
+		// Ensure the EventSystem object and UI are preserved between scenes
 		DontDestroyOnLoad(this);
 		DontDestroyOnLoad(GameObject.Find("UI"));
+
+		// Lock the cursor to the game window, and make it invisible
+		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible = false;
 	}
 	
 	/*

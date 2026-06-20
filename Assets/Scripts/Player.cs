@@ -6,10 +6,10 @@ public class Player : MonoBehaviour {
 	private Rigidbody rb;
 	private InputAction moveAction, lookAction;
 	private readonly float walkSpeed = 5f;
-	private readonly float lookSpeed = 75f;
+	private readonly float lookSpeed = 60f;
 
 	/*
-	 * Start method - initialize any non-readonly variables in here
+	 * Start method
 	 */
 	private void Start() {
 		rb = GetComponent<Rigidbody>();
