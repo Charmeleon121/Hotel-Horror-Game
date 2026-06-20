@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,6 +8,9 @@ public class Player : MonoBehaviour {
 	private InputAction moveAction, lookAction;
 	private readonly float walkSpeed = 5f;
 	private readonly float lookSpeed = 60f;
+
+	// Player inventory
+	private List<string> inventory = new List<string>();
 
 	/*
 	 * Start method
