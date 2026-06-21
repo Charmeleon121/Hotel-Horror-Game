@@ -1,10 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour {
 	// External scripts
 	private UIHandler uiHandler;
+
+	// Interact keybind
+	private InputAction interactAction;
 
 	// Variables relating to player movement
 	private Rigidbody rb;
@@ -19,7 +23,11 @@ public class Player : MonoBehaviour {
 	 * Start method
 	 */
 	private void Start() {
+		DontDestroyOnLoad(this);
+
 		uiHandler = GameObject.Find("EventSystem").GetComponent<UIHandler>();
+
+		interactAction = InputSystem.actions.FindAction("Player/Interact");
 
 		rb = GetComponent<Rigidbody>();
 		moveAction = InputSystem.actions.FindAction("Player/Move");
@@ -31,6 +39,7 @@ public class Player : MonoBehaviour {
 	 */
 	private void Update() {
 		Look();
+		Interaction();
 	}
 	
 	/*
@@ -52,15 +61,32 @@ public class Player : MonoBehaviour {
 
 		transform.rotation = Quaternion.Euler(0f, playerLookRot, 0f);
 		Camera.main.transform.localRotation = Quaternion.Euler(cameraLookRot, 0f, 0f);
+	}
+
+	/*
+	 * Interact method - this is for handling the player interacting with objects/the environment
+	 */
+	private void Interaction() {
+		GameObject target = null;
 
 		if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.TransformDirection(Vector3.forward), out RaycastHit hit, 3f)) {
 			if (!hit.collider.CompareTag("Untagged")) {
+				target = hit.collider.gameObject;
 				uiHandler.SetHoverText(hit.collider.tag);
 			} else {
 				uiHandler.SetHoverText("");
 			}
 		} else {
 			uiHandler.SetHoverText("");
+		}
+
+		if (interactAction.triggered && target != null) {
+			switch (target.tag) {
+				case "Room Door":
+					SceneManager.LoadScene("Hallway");
+					transform.position = new Vector3(0f, 0f, 0f);
+					break;
+			}
 		}
 	}
 
