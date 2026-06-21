@@ -9,7 +9,7 @@ public class UIHandler : MonoBehaviour {
 	private bool invOpen = false;
 
 	// UI elements
-	public TextMeshProUGUI fpsDisplay;
+	public TextMeshProUGUI fpsDisplay, hoverText;
 	public GameObject invPanel;
 	
 	// Timer
@@ -65,5 +65,12 @@ public class UIHandler : MonoBehaviour {
 		}
 
 		invOpen = !invOpen;
+	}
+
+	/*
+	 * Change the value of the hover text
+	 */
+	public void SetHoverText(string text) {
+		hoverText.text = text;
 	}
 }

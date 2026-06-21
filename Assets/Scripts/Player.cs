@@ -3,11 +3,14 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour {
+	// External scripts
+	private UIHandler uiHandler;
+
 	// Variables relating to player movement
 	private Rigidbody rb;
 	private InputAction moveAction, lookAction;
 	private readonly float walkSpeed = 5f;
-	private readonly float lookSpeed = 60f;
+	private readonly float lookSpeed = 10f;
 
 	// Player inventory
 	private List<string> inventory = new List<string>();
@@ -16,9 +19,18 @@ public class Player : MonoBehaviour {
 	 * Start method
 	 */
 	private void Start() {
+		uiHandler = GameObject.Find("EventSystem").GetComponent<UIHandler>();
+
 		rb = GetComponent<Rigidbody>();
 		moveAction = InputSystem.actions.FindAction("Player/Move");
 		lookAction = InputSystem.actions.FindAction("Player/Look");
+	}
+
+	/*
+	 * Update method - non-physics-related code should run in here
+	 */
+	private void Update() {
+		Look();
 	}
 	
 	/*
@@ -26,7 +38,6 @@ public class Player : MonoBehaviour {
 	 * code should be run from here
 	 */
 	private void FixedUpdate() {
-		Look();
 		Move();
 	}
 
@@ -41,6 +52,16 @@ public class Player : MonoBehaviour {
 
 		transform.rotation = Quaternion.Euler(0f, playerLookRot, 0f);
 		Camera.main.transform.localRotation = Quaternion.Euler(cameraLookRot, 0f, 0f);
+
+		if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out RaycastHit hit, 20f)) {
+			if (hit.collider.CompareTag("Untagged")) {
+				uiHandler.SetHoverText("");
+			} else {
+				uiHandler.SetHoverText(hit.collider.tag);
+			}
+		} else {
+			uiHandler.SetHoverText("");
+		}
 	}
 
 	/*
