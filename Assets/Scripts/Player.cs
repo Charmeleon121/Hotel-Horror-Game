@@ -53,11 +53,11 @@ public class Player : MonoBehaviour {
 		transform.rotation = Quaternion.Euler(0f, playerLookRot, 0f);
 		Camera.main.transform.localRotation = Quaternion.Euler(cameraLookRot, 0f, 0f);
 
-		if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out RaycastHit hit, 20f)) {
-			if (hit.collider.CompareTag("Untagged")) {
-				uiHandler.SetHoverText("");
-			} else {
+		if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.TransformDirection(Vector3.forward), out RaycastHit hit, 3f)) {
+			if (!hit.collider.CompareTag("Untagged")) {
 				uiHandler.SetHoverText(hit.collider.tag);
+			} else {
+				uiHandler.SetHoverText("");
 			}
 		} else {
 			uiHandler.SetHoverText("");
