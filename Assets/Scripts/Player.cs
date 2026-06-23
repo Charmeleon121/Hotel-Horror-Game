@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,8 +8,11 @@ public class Player : MonoBehaviour {
 	// External scripts
 	private UIHandler uiHandler;
 
-	// Interact keybind
-	private InputAction interactAction;
+	// Misc. keybinds
+	private InputAction interactAction, flashlightAction;
+
+	// Flashlight object
+	private Light flashlight;
 
 	// Variables relating to player movement
 	private Rigidbody rb;
@@ -28,6 +32,9 @@ public class Player : MonoBehaviour {
 		uiHandler = GameObject.Find("EventSystem").GetComponent<UIHandler>();
 
 		interactAction = InputSystem.actions.FindAction("Player/Interact");
+		flashlightAction = InputSystem.actions.FindAction("Player/Toggle Flashlight");
+
+		flashlight = GameObject.Find("Flashlight").GetComponent<Light>();
 
 		rb = GetComponent<Rigidbody>();
 		moveAction = InputSystem.actions.FindAction("Player/Move");
@@ -40,6 +47,14 @@ public class Player : MonoBehaviour {
 	private void Update() {
 		Look();
 		Interaction();
+
+		if (flashlightAction.triggered) {
+			if (flashlight.intensity == 0f) {
+				flashlight.intensity = 5f;
+			} else {
+				flashlight.intensity = 0f;
+			}
+		}
 	}
 	
 	/*
