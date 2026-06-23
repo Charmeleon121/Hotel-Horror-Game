@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -9,10 +8,12 @@ public class Player : MonoBehaviour {
 	private UIHandler uiHandler;
 
 	// Misc. keybinds
-	private InputAction interactAction, flashlightAction;
+	private InputAction interactAction;
 
-	// Flashlight object
+	// Variables relating to the player's flashlight
 	private Light flashlight;
+	private InputAction flashlightAction;
+	private float batteryLevel;
 
 	// Variables relating to player movement
 	private Rigidbody rb;
@@ -32,9 +33,10 @@ public class Player : MonoBehaviour {
 		uiHandler = GameObject.Find("EventSystem").GetComponent<UIHandler>();
 
 		interactAction = InputSystem.actions.FindAction("Player/Interact");
-		flashlightAction = InputSystem.actions.FindAction("Player/Toggle Flashlight");
 
 		flashlight = GameObject.Find("Flashlight").GetComponent<Light>();
+		flashlightAction = InputSystem.actions.FindAction("Player/Toggle Flashlight");
+		batteryLevel = 1f;
 
 		rb = GetComponent<Rigidbody>();
 		moveAction = InputSystem.actions.FindAction("Player/Move");
@@ -47,16 +49,9 @@ public class Player : MonoBehaviour {
 	private void Update() {
 		Look();
 		Interaction();
-
-		if (flashlightAction.triggered) {
-			if (flashlight.intensity == 0f) {
-				flashlight.intensity = 5f;
-			} else {
-				flashlight.intensity = 0f;
-			}
-		}
+		HandleFlashlight();
 	}
-	
+
 	/*
 	 * FixedUpdate method - all player movement and similar physics-related
 	 * code should be run from here
@@ -106,6 +101,35 @@ public class Player : MonoBehaviour {
 	}
 
 	/*
+	 * Method for handling everything to do with the flashlight's operation
+	 */
+	private void HandleFlashlight() {
+		if (flashlightAction.triggered) {
+			if (batteryLevel > 0f) {
+				// If there's enough battery, the player can toggle it on or off
+				if (flashlight.intensity == 0f) {
+					flashlight.intensity = 5f;
+				} else {
+					flashlight.intensity = 0f;
+				}
+			}
+		}
+
+		// While the flashlight is on, drain its battery slowly
+		if (flashlight.intensity == 5f) {
+			batteryLevel -= 0.01f * Time.deltaTime;
+		}
+
+		// Make sure the battery level can't become negative
+		batteryLevel = Mathf.Max(0f, batteryLevel);
+
+		// If the battery is dead, the light should turn off
+		if (batteryLevel == 0f) {
+			flashlight.intensity = 0f;
+		}
+	}
+
+	/*
 	 * Move method - this is for moving the player
 	 */
 	private void Move() {
@@ -117,5 +141,12 @@ public class Player : MonoBehaviour {
 		} else {
 			rb.linearVelocity = Vector3.zero;
 		}
+	}
+
+	/*
+	 * Get the current battery level of the flashlight
+	 */
+	public float GetBatteryLevel() {
+		return batteryLevel;
 	}
 }

@@ -1,24 +1,32 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
-using System;
 
 public class UIHandler : MonoBehaviour {
+	// External scripts
+	private Player playerScript;
+
 	// Inventory related elements
 	private InputAction invAction;
 	private bool invOpen = false;
 
 	// UI elements
 	public TextMeshProUGUI fpsDisplay, hoverText;
+	public TextMeshProUGUI batteryDisplay; // NOTE! This is TEMPORARY and will be replaced with a custom graphic in future!
 	public GameObject invPanel;
-	
+
 	// Timer
 	private int timer = 0;
-	
+
 	/*
-	  * Start method
-	  */
+	 * Start method
+	 */
 	private void Start() {
+		playerScript = GameObject.Find("Player").GetComponent<Player>();
+
+		// Set target frame rate (TEMPORARY - will be replaced by a menu option in future!)
+		Application.targetFrameRate = 165;
+
 		// Ensure the EventSystem object and UI are preserved between scenes
 		DontDestroyOnLoad(this);
 		DontDestroyOnLoad(GameObject.Find("UI"));
@@ -30,12 +38,20 @@ public class UIHandler : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
 	}
-	
+
 	/*
-	  * Update method
-	  */
+	 * Update method
+	 */
 	private void Update() {
-		ShowFPS();
+		// Some things don't need to update every frame, so limit them to once per second with this timer
+		if (timer == Application.targetFrameRate) {
+			ShowFPS();
+			timer = 0;
+		} else {
+			++timer;
+		}
+
+		HandleBatteryDisplay();
 
 		if (invAction.triggered) {
 			HandleInventoryWindow();
@@ -46,12 +62,17 @@ public class UIHandler : MonoBehaviour {
 	 * Handling of the FPS display
 	 */
 	private void ShowFPS() {
-		if (timer == 30) {
-			timer = 0;
-			fpsDisplay.text = $"FPS: {1f / Time.deltaTime:n2}";
-		} else {
-			++timer;
-		}
+		fpsDisplay.text = $"FPS: {1f / Time.deltaTime:n2}";
+	}
+
+	/*
+	 * Handling of the battery level displaye
+	 * 
+	 * NOTE! This WILL need to be modified in future!
+	 * The text object WILL be replaced with a custom graphic!
+	 */
+	private void HandleBatteryDisplay() {
+		batteryDisplay.text = $"Battery: {playerScript.GetBatteryLevel() * 100:n2}%";
 	}
 
 	/*
