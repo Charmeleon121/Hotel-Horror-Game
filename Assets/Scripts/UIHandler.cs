@@ -3,6 +3,9 @@ using UnityEngine.InputSystem;
 using TMPro;
 
 public class UIHandler : MonoBehaviour {
+	// TEMPORARY!
+	public int targetFPS = 165;
+	
 	// External scripts
 	private Player playerScript;
 
@@ -25,7 +28,7 @@ public class UIHandler : MonoBehaviour {
 		playerScript = GameObject.Find("Player").GetComponent<Player>();
 
 		// Set target frame rate (TEMPORARY - will be replaced by a menu option in future!)
-		Application.targetFrameRate = 165;
+		Application.targetFrameRate = targetFPS;
 
 		// Ensure the EventSystem object and UI are preserved between scenes
 		DontDestroyOnLoad(this);
